@@ -23,13 +23,9 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ../config/nginx.conf:/etc/nginx/templates/default.conf.template:ro
+      - ../config/generated-nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ../certs:/etc/nginx/certs:ro
       - certbot-webroot:/var/www/certbot:ro
-    environment:
-      - DOMAIN=${DOMAIN:-desktop.localhost}
-      - ADMIN_DOMAIN=${ADMIN_DOMAIN:-admin.localhost}
-      - AUTH_TOKEN=${AUTH_TOKEN:-changeme}
     depends_on:
       - desktop
     restart: unless-stopped
