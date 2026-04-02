@@ -14,11 +14,10 @@ if [ ! -d "$LIFTOFF_DIR" ]; then
     exit 1
 fi
 
-# Check if BepInEx is already installed
-if [ -d "$LIFTOFF_DIR/BepInEx" ]; then
-    echo "BepInEx is already installed in Liftoff directory."
-    echo "To reinstall, remove $LIFTOFF_DIR/BepInEx first."
-    exit 0
+# Check if BepInEx core is already installed (not just the directory)
+if [ -f "$LIFTOFF_DIR/run_bepinex.sh" ] && [ -d "$LIFTOFF_DIR/BepInEx/core" ]; then
+    echo "BepInEx is already fully installed. Use --force to reinstall."
+    [ "$1" != "--force" ] && exit 0
 fi
 
 # Check for BepInEx zip
