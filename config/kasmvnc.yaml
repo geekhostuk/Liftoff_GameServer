@@ -1,0 +1,25 @@
+network:
+  protocol: http
+  websocket_port: 6901
+  ssl:
+    require_ssl: false
+  udp:
+    public_ip: auto
+
+server:
+  advanced:
+    x_font_path: auto
+  auto_shutdown:
+    no_user_session_timeout: never
+
+desktop:
+  resolution:
+    width: 1920
+    height: 1080
+
+encoding:
+  max_frame_rate: 30
+  rect_encoding_mode:
+    min_quality: 5
+    max_quality: 9
+    consider_lossless_quality: 9

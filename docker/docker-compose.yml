@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  desktop:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: liftoff-desktop
+    environment:
+      - VNC_PASSWORD=${VNC_PASSWORD:-changeme}
+      - DISPLAY=:1
+      - RESOLUTION=1920x1080x24
+    volumes:
+      - steam-data:/home/gamer/.steam
+      - liftoff-mods:/home/gamer/.steam/steam/steamapps/common/Liftoff/BepInEx/plugins
+    ports:
+      - "127.0.0.1:6901:6901"
+    shm_size: "2g"
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: liftoff-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../config/nginx.conf:/etc/nginx/templates/default.conf.template:ro
+      - certs:/etc/nginx/certs:ro
+      - certbot-webroot:/var/www/certbot:ro
+    environment:
+      - DOMAIN=${DOMAIN:-desktop.localhost}
+      - ADMIN_DOMAIN=${ADMIN_DOMAIN:-admin.localhost}
+      - AUTH_TOKEN=${AUTH_TOKEN:-changeme}
+    depends_on:
+      - desktop
+    restart: unless-stopped
+
+volumes:
+  steam-data:
+    name: liftoff-steam-data
+  liftoff-mods:
+    name: liftoff-bepinex-mods
+  certs:
+    name: liftoff-certs
+  certbot-webroot:
+    name: liftoff-certbot

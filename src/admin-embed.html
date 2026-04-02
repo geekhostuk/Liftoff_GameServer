@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liftoff Server - Remote Desktop</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #e0e0e0;
+        }
+        .header {
+            background: #16213e;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #0f3460;
+        }
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4caf50;
+        }
+        .status-dot.disconnected { background: #f44336; }
+        .desktop-container {
+            width: 100%;
+            height: calc(100vh - 56px);
+            position: relative;
+        }
+        .desktop-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        .loading p { margin-top: 12px; color: #888; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Liftoff Server - Remote Desktop</h1>
+        <div class="status">
+            <div class="status-dot" id="statusDot"></div>
+            <span id="statusText">Connecting...</span>
+        </div>
+    </div>
+    <div class="desktop-container" id="container">
+        <div class="loading" id="loading">
+            <p>Connecting to remote desktop...</p>
+        </div>
+    </div>
+
+    <script>
+        // Replace with your actual domain and token
+        // In production, generate time-limited tokens from your backend
+        const DESKTOP_URL = 'https://desktop.yourdomain.com';
+        const AUTH_TOKEN = 'YOUR_AUTH_TOKEN_HERE';
+
+        const container = document.getElementById('container');
+        const loading = document.getElementById('loading');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+
+        function connect() {
+            const iframe = document.createElement('iframe');
+            iframe.src = `${DESKTOP_URL}/?token=${AUTH_TOKEN}`;
+            iframe.allow = 'clipboard-read; clipboard-write';
+            iframe.sandbox = 'allow-scripts allow-same-origin allow-forms';
+
+            iframe.onload = function() {
+                loading.style.display = 'none';
+                statusDot.classList.remove('disconnected');
+                statusText.textContent = 'Connected';
+            };
+
+            iframe.onerror = function() {
+                statusDot.classList.add('disconnected');
+                statusText.textContent = 'Disconnected';
+            };
+
+            container.appendChild(iframe);
+        }
+
+        connect();
+    </script>
+</body>
+</html>
