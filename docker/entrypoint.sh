@@ -5,13 +5,8 @@ VNC_PASSWORD="${VNC_PASSWORD:-changeme}"
 DISPLAY="${DISPLAY:-:1}"
 RESOLUTION="${RESOLUTION:-1920x1080x24}"
 
-echo "==> Setting up VNC password"
+echo "==> Setting up VNC"
 mkdir -p /home/gamer/.vnc
-echo "$VNC_PASSWORD" | kasmvncpasswd -u gamer -w -r > /dev/null 2>&1 || {
-    # Fallback: write password file manually
-    mkdir -p /home/gamer/.kasmpasswd
-    echo "gamer:$(echo -n "$VNC_PASSWORD" | base64):rw" > /home/gamer/.kasmpasswd/passwd
-}
 
 echo "==> Configuring software rendering"
 export LIBGL_ALWAYS_SOFTWARE=1

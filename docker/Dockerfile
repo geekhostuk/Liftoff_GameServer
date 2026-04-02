@@ -36,12 +36,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV LANG=en_US.UTF-8 \
     LC_ALL=en_US.UTF-8
 
-# Install KasmVNC
-ARG KASMVNC_VERSION=1.3.2
-RUN wget -q "https://github.com/kasmtech/KasmVNC/releases/download/v${KASMVNC_VERSION}/kasmvncserver_jammy_${KASMVNC_VERSION}_amd64.deb" -O /tmp/kasmvnc.deb \
-    && apt-get update \
-    && dpkg -i /tmp/kasmvnc.deb || apt-get -f install -y \
-    && rm /tmp/kasmvnc.deb \
+# Install x11vnc and noVNC for web-based remote desktop
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    x11vnc \
+    python3 \
+    python3-numpy \
+    git \
+    && git clone --depth 1 https://github.com/novnc/noVNC.git /opt/noVNC \
+    && git clone --depth 1 https://github.com/novnc/websockify.git /opt/noVNC/utils/websockify \
+    && ln -s /opt/noVNC/vnc.html /opt/noVNC/index.html \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -73,7 +76,6 @@ RUN useradd -m -s /bin/bash -G audio,video gamer
 
 # Copy configuration files
 COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY config/kasmvnc.yaml /etc/kasmvnc/kasmvnc.yaml
 COPY scripts/install-steam.sh /opt/scripts/install-steam.sh
 COPY scripts/install-bepinex.sh /opt/scripts/install-bepinex.sh
 COPY docker/entrypoint.sh /entrypoint.sh
