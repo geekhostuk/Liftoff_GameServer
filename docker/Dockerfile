@@ -62,14 +62,20 @@ RUN dpkg --add-architecture i386 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Steam - accept EULA and install the launcher package
-RUN wget -q "https://cdn.akamai.steamstatic.com/client/installer/steam.deb" -O /tmp/steam.deb \
-    && echo 'steam steam/question select I AGREE' | debconf-set-selections \
+# Install Steam - accept EULA, add multiverse, install steam:i386
+RUN echo 'steam steam/question select I AGREE' | debconf-set-selections \
     && echo 'steam steam/license note ' | debconf-set-selections \
-    && dpkg -i /tmp/steam.deb; apt-get -f install -y \
-    && rm /tmp/steam.deb \
+    && apt-get update \
+    && apt-get install -y software-properties-common \
+    && add-apt-repository multiverse \
+    && dpkg --add-architecture i386 \
+    && apt-get update \
+    && apt-get install -y steam-devices steam:i386 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Add /usr/games to PATH so 'steam' command works
+ENV PATH="/usr/games:${PATH}"
 
 # Download BepInEx for Unix (Liftoff is Unity Mono)
 ARG BEPINEX_VERSION=5.4.22

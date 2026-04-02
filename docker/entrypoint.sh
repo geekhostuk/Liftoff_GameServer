@@ -12,16 +12,6 @@ echo "==> Configuring software rendering"
 export LIBGL_ALWAYS_SOFTWARE=1
 export GALLIUM_DRIVER=llvmpipe
 
-echo "==> Bootstrapping Steam runtime (first run)"
-STEAM_DIR="/home/gamer/.local/share/Steam"
-if [ ! -f "$STEAM_DIR/steam.sh" ]; then
-    echo "    Downloading Steam runtime..."
-    mkdir -p "$STEAM_DIR"
-    curl -sqL 'https://repo.steampowered.com/steam/archive/precise/steam_latest.tar.gz' \
-        | tar xzf - -C "$STEAM_DIR" --strip-components=1 || true
-    chown -R gamer:gamer "$STEAM_DIR"
-fi
-
 echo "==> Fixing permissions"
 chown -R gamer:gamer /home/gamer
 
