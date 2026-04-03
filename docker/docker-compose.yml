@@ -57,7 +57,9 @@ volumes:
     name: liftoff-bepinex-mods
   steam-data-2:
     name: liftoff-steam-data-2
+    external: true
   liftoff-mods-2:
     name: liftoff-bepinex-mods-2
+    external: true
   certbot-webroot:
     name: liftoff-certbot
