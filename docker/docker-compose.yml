@@ -17,6 +17,24 @@ services:
     privileged: true
     restart: unless-stopped
 
+  desktop2:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: liftoff-desktop-2
+    environment:
+      - VNC_PASSWORD=${VNC_PASSWORD_2:-changeme}
+      - DISPLAY=:1
+      - RESOLUTION=1920x1080x24
+    volumes:
+      - steam-data-2:/home/gamer/.steam
+      - liftoff-mods-2:/home/gamer/.steam/steam/steamapps/common/Liftoff/BepInEx/plugins
+    ports:
+      - "127.0.0.1:6902:6901"
+    shm_size: "2g"
+    privileged: true
+    restart: unless-stopped
+
   nginx:
     image: nginx:alpine
     container_name: liftoff-proxy
@@ -29,6 +47,7 @@ services:
       - certbot-webroot:/var/www/certbot:ro
     depends_on:
       - desktop
+      - desktop2
     restart: unless-stopped
 
 volumes:
@@ -36,5 +55,9 @@ volumes:
     name: liftoff-steam-data
   liftoff-mods:
     name: liftoff-bepinex-mods
+  steam-data-2:
+    name: liftoff-steam-data-2
+  liftoff-mods-2:
+    name: liftoff-bepinex-mods-2
   certbot-webroot:
     name: liftoff-certbot
