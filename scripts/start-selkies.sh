@@ -31,6 +31,7 @@ exec selkies-gstreamer \
     --addr=0.0.0.0 \
     --port=6901 \
     --enable_https=false \
+    --enable_basic_auth=false \
     --encoder="${ENCODER}" \
     --framerate=60 \
     --video_bitrate=6000 \
