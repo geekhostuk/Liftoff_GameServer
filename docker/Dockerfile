@@ -66,10 +66,13 @@ ENV LANG=en_US.UTF-8 \
     LC_ALL=en_US.UTF-8
 
 # Install VirtualGL for GPU-accelerated OpenGL rendering
-ARG VIRTUALGL_VERSION=3.1.1
+ARG VIRTUALGL_VERSION=3.1.4
 RUN wget -q "https://github.com/VirtualGL/virtualgl/releases/download/${VIRTUALGL_VERSION}/virtualgl_${VIRTUALGL_VERSION}_amd64.deb" -O /tmp/virtualgl.deb \
-    && dpkg -i /tmp/virtualgl.deb || apt-get install -f -y \
-    && rm /tmp/virtualgl.deb
+    && apt-get update \
+    && dpkg -i /tmp/virtualgl.deb; apt-get install -f -y \
+    && rm /tmp/virtualgl.deb \
+    && test -x /opt/VirtualGL/bin/vglrun \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Selkies-GStreamer for WebRTC streaming with NVENC (3 components from GitHub releases)
 ARG SELKIES_VERSION=1.6.2
@@ -139,6 +142,7 @@ COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY scripts/setup-display.sh /opt/scripts/setup-display.sh
 COPY scripts/install-steam.sh /opt/scripts/install-steam.sh
 COPY scripts/install-bepinex.sh /opt/scripts/install-bepinex.sh
+COPY scripts/start-selkies.sh /opt/scripts/start-selkies.sh
 COPY docker/entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh /opt/scripts/*.sh
