@@ -36,4 +36,4 @@ exec selkies-gstreamer \
     --framerate=60 \
     --video_bitrate=6000 \
     --enable_resize=false \
-    --web_root=/opt/gst-web
+    --web_root=/opt/gst-web/gst-web
