@@ -12,7 +12,7 @@ services:
       - steam-data:/home/gamer/.steam
       - liftoff-mods:/home/gamer/.steam/steam/steamapps/common/Liftoff/BepInEx/plugins
     ports:
-      - "31263:6901"
+      - "31264:6901"
     shm_size: "2g"
     deploy:
       resources:
@@ -39,7 +39,7 @@ services:
       - steam-data-2:/home/gamer/.steam
       - liftoff-mods-2:/home/gamer/.steam/steam/steamapps/common/Liftoff/BepInEx/plugins
     ports:
-      - "31264:6901"
+      - "31265:6901"
     shm_size: "2g"
     deploy:
       resources:
