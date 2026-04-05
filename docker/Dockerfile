@@ -91,13 +91,13 @@ RUN mkdir -p /opt/gst-web \
     && tar -xzf /tmp/selkies-web.tar.gz -C /opt/gst-web \
     && rm /tmp/selkies-web.tar.gz
 
-ENV GSTREAMER_PATH="/opt/gstreamer" \
-    PATH="/opt/gstreamer/bin:${PATH}" \
-    LD_LIBRARY_PATH="/opt/gstreamer/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}" \
-    GST_PLUGIN_PATH="/opt/gstreamer/lib/x86_64-linux-gnu/gstreamer-1.0:${GST_PLUGIN_PATH}" \
-    GST_PLUGIN_SYSTEM_PATH="/opt/gstreamer/lib/x86_64-linux-gnu/gstreamer-1.0:/usr/lib/x86_64-linux-gnu/gstreamer-1.0" \
-    GI_TYPELIB_PATH="/opt/gstreamer/lib/x86_64-linux-gnu/girepository-1.0:/usr/lib/x86_64-linux-gnu/girepository-1.0" \
-    PYTHONPATH="/opt/gstreamer/lib/python3/dist-packages:${PYTHONPATH}"
+ENV GSTREAMER_PATH="/opt/gstreamer/gstreamer" \
+    PATH="/opt/gstreamer/gstreamer/bin:${PATH}" \
+    LD_LIBRARY_PATH="/opt/gstreamer/gstreamer/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}" \
+    GST_PLUGIN_PATH="/opt/gstreamer/gstreamer/lib/x86_64-linux-gnu/gstreamer-1.0:${GST_PLUGIN_PATH}" \
+    GST_PLUGIN_SYSTEM_PATH="/opt/gstreamer/gstreamer/lib/x86_64-linux-gnu/gstreamer-1.0:/usr/lib/x86_64-linux-gnu/gstreamer-1.0" \
+    GI_TYPELIB_PATH="/opt/gstreamer/gstreamer/lib/x86_64-linux-gnu/girepository-1.0:/usr/lib/x86_64-linux-gnu/girepository-1.0" \
+    PYTHONPATH="/opt/gstreamer/gstreamer/lib/python3/dist-packages:${PYTHONPATH}"
 
 # Enable 32-bit architecture for Steam
 RUN dpkg --add-architecture i386 \

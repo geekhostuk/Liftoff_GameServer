@@ -1,6 +1,6 @@
 #!/bin/bash
 # Start Selkies-GStreamer with proper GStreamer environment
-export GSTREAMER_PATH="/opt/gstreamer"
+export GSTREAMER_PATH="/opt/gstreamer/gstreamer"
 export PATH="${GSTREAMER_PATH}/bin:${PATH}"
 export LD_LIBRARY_PATH="${GSTREAMER_PATH}/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}"
 export GST_PLUGIN_PATH="${GSTREAMER_PATH}/lib/x86_64-linux-gnu/gstreamer-1.0:${GST_PLUGIN_PATH}"
