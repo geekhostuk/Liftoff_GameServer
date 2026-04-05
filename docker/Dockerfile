@@ -69,13 +69,25 @@ RUN wget -q "https://github.com/VirtualGL/virtualgl/releases/download/${VIRTUALG
     && dpkg -i /tmp/virtualgl.deb || apt-get install -f -y \
     && rm /tmp/virtualgl.deb
 
-# Install Selkies-GStreamer for WebRTC streaming with NVENC
-ARG SELKIES_VERSION=1.6.0
-RUN pip3 install --no-cache-dir selkies-gstreamer==${SELKIES_VERSION} || pip3 install --no-cache-dir selkies-gstreamer \
-    && mkdir -p /opt/selkies-web \
+# Install Selkies-GStreamer for WebRTC streaming with NVENC (3 components from GitHub releases)
+ARG SELKIES_VERSION=1.6.2
+# 1. Custom GStreamer build with Selkies patches
+RUN mkdir -p /opt/gstreamer \
+    && wget -q "https://github.com/selkies-project/selkies-gstreamer/releases/download/v${SELKIES_VERSION}/gstreamer-selkies_gpl_v${SELKIES_VERSION}_ubuntu22.04_amd64.tar.gz" -O /tmp/gstreamer-selkies.tar.gz \
+    && tar -xzf /tmp/gstreamer-selkies.tar.gz -C /opt/gstreamer \
+    && rm /tmp/gstreamer-selkies.tar.gz
+# 2. Python signaling server (wheel from GitHub, not PyPI)
+RUN pip3 install --no-cache-dir --force-reinstall \
+    "https://github.com/selkies-project/selkies-gstreamer/releases/download/v${SELKIES_VERSION}/selkies_gstreamer-${SELKIES_VERSION}-py3-none-any.whl"
+# 3. Web interface
+RUN mkdir -p /opt/gst-web \
     && wget -q "https://github.com/selkies-project/selkies-gstreamer/releases/download/v${SELKIES_VERSION}/selkies-gstreamer-web_v${SELKIES_VERSION}.tar.gz" -O /tmp/selkies-web.tar.gz \
-    && tar -xzf /tmp/selkies-web.tar.gz -C /opt/selkies-web \
+    && tar -xzf /tmp/selkies-web.tar.gz -C /opt/gst-web \
     && rm /tmp/selkies-web.tar.gz
+
+ENV PATH="/opt/gstreamer/bin:${PATH}" \
+    LD_LIBRARY_PATH="/opt/gstreamer/lib:${LD_LIBRARY_PATH}" \
+    GST_PLUGIN_PATH="/opt/gstreamer/lib/gstreamer-1.0:${GST_PLUGIN_PATH}"
 
 # Enable 32-bit architecture for Steam
 RUN dpkg --add-architecture i386 \
