@@ -8,9 +8,14 @@ RESOLUTION="${RESOLUTION:-1920x1080x24}"
 echo "==> Setting up VNC"
 mkdir -p /home/gamer/.vnc
 
-echo "==> Configuring software rendering"
-export LIBGL_ALWAYS_SOFTWARE=1
-export GALLIUM_DRIVER=llvmpipe
+echo "==> Checking GPU availability"
+if command -v nvidia-smi &>/dev/null && nvidia-smi &>/dev/null; then
+    echo "    NVIDIA GPU detected: $(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null)"
+else
+    echo "    No NVIDIA GPU detected, falling back to software rendering"
+    export LIBGL_ALWAYS_SOFTWARE=1
+    export GALLIUM_DRIVER=llvmpipe
+fi
 
 echo "==> Fixing permissions"
 chown -R gamer:gamer /home/gamer

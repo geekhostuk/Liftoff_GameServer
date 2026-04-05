@@ -14,12 +14,16 @@ services:
     ports:
       - "127.0.0.1:6901:6901"
     shm_size: "2g"
-    privileged: true
     deploy:
       resources:
         limits:
           cpus: "2.0"
           memory: 8g
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     restart: unless-stopped
 
   desktop2:
@@ -37,12 +41,16 @@ services:
     ports:
       - "127.0.0.1:6902:6901"
     shm_size: "2g"
-    privileged: true
     deploy:
       resources:
         limits:
           cpus: "2.0"
           memory: 8g
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     restart: unless-stopped
 
   nginx:

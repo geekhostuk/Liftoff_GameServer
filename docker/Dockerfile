@@ -1,10 +1,10 @@
-FROM ubuntu:22.04
+FROM nvidia/cuda:12.3.1-runtime-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive \
     DISPLAY=:1 \
-    LIBGL_ALWAYS_SOFTWARE=1 \
-    GALLIUM_DRIVER=llvmpipe \
-    HOME=/home/gamer
+    HOME=/home/gamer \
+    NVIDIA_VISIBLE_DEVICES=all \
+    NVIDIA_DRIVER_CAPABILITIES=all
 
 # Core system packages + display + desktop
 RUN apt-get update && apt-get install -y --no-install-recommends \
