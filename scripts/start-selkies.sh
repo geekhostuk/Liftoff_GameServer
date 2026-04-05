@@ -20,11 +20,26 @@ if ! python3 -c "import gi; gi.require_version('Gst', '1.0'); gi.require_version
     export PYTHONPATH=""
 fi
 
-# Detect encoder: prefer NVENC, fall back to x264
-ENCODER="nvh264enc"
-if ! gst-inspect-1.0 nvh264enc >/dev/null 2>&1; then
-    echo "WARN: nvh264enc not available, falling back to x264enc"
-    ENCODER="x264enc"
+# Detect encoder: test if NVENC can actually open a session, fall back to x264
+ENCODER="x264enc"
+if gst-inspect-1.0 nvh264enc >/dev/null 2>&1; then
+    # Plugin exists, but test if CUDA device is accessible
+    if python3 -c "
+import gi
+gi.require_version('Gst', '1.0')
+from gi.repository import Gst
+Gst.init(None)
+enc = Gst.ElementFactory.make('nvh264enc', None)
+if enc is None:
+    exit(1)
+" 2>/dev/null; then
+        echo "INFO: NVENC encoder available, using hardware encoding"
+        ENCODER="nvh264enc"
+    else
+        echo "WARN: NVENC plugin found but GPU not accessible for encoding, using x264enc"
+    fi
+else
+    echo "INFO: Using x264enc software encoder"
 fi
 
 exec selkies-gstreamer \
