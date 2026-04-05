@@ -77,8 +77,9 @@ RUN mkdir -p /opt/gstreamer \
     && tar -xzf /tmp/gstreamer-selkies.tar.gz -C /opt/gstreamer \
     && rm /tmp/gstreamer-selkies.tar.gz
 # 2. Python signaling server (wheel from GitHub, not PyPI)
-RUN pip3 install --no-cache-dir --force-reinstall \
-    "https://github.com/selkies-project/selkies-gstreamer/releases/download/v${SELKIES_VERSION}/selkies_gstreamer-${SELKIES_VERSION}-py3-none-any.whl"
+RUN wget -q "https://github.com/selkies-project/selkies-gstreamer/releases/download/v${SELKIES_VERSION}/selkies_gstreamer-${SELKIES_VERSION}-py3-none-any.whl" -O /tmp/selkies.whl \
+    && pip3 install --no-cache-dir --force-reinstall /tmp/selkies.whl \
+    && rm /tmp/selkies.whl
 # 3. Web interface
 RUN mkdir -p /opt/gst-web \
     && wget -q "https://github.com/selkies-project/selkies-gstreamer/releases/download/v${SELKIES_VERSION}/selkies-gstreamer-web_v${SELKIES_VERSION}.tar.gz" -O /tmp/selkies-web.tar.gz \
