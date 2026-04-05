@@ -20,27 +20,10 @@ if ! python3 -c "import gi; gi.require_version('Gst', '1.0'); gi.require_version
     export PYTHONPATH=""
 fi
 
-# Detect encoder: test if NVENC can actually open a session, fall back to x264
+# Use x264enc — NVENC fails at runtime with NV_ENC_ERR_INCOMPATIBLE_CLIENT_KEY
+# on driver 580.x due to SDK version mismatch with GStreamer's nvcodec plugin
 ENCODER="x264enc"
-if gst-inspect-1.0 nvh264enc >/dev/null 2>&1; then
-    # Plugin exists, but test if CUDA device is accessible
-    if python3 -c "
-import gi
-gi.require_version('Gst', '1.0')
-from gi.repository import Gst
-Gst.init(None)
-enc = Gst.ElementFactory.make('nvh264enc', None)
-if enc is None:
-    exit(1)
-" 2>/dev/null; then
-        echo "INFO: NVENC encoder available, using hardware encoding"
-        ENCODER="nvh264enc"
-    else
-        echo "WARN: NVENC plugin found but GPU not accessible for encoding, using x264enc"
-    fi
-else
-    echo "INFO: Using x264enc software encoder"
-fi
+echo "INFO: Using x264enc software encoder"
 
 exec selkies-gstreamer \
     --addr=0.0.0.0 \
