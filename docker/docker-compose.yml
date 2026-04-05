@@ -14,6 +14,9 @@ services:
     ports:
       - "31264:6901"
     shm_size: "2g"
+    security_opt:
+      - seccomp:unconfined
+      - apparmor:unconfined
     deploy:
       resources:
         limits:
@@ -41,6 +44,9 @@ services:
     ports:
       - "31265:6901"
     shm_size: "2g"
+    security_opt:
+      - seccomp:unconfined
+      - apparmor:unconfined
     deploy:
       resources:
         limits:
