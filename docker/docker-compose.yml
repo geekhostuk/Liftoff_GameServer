@@ -5,7 +5,6 @@ services:
       dockerfile: docker/Dockerfile
     container_name: liftoff-desktop
     environment:
-      - VNC_PASSWORD=${VNC_PASSWORD:-changeme}
       - DISPLAY=:1
       - RESOLUTION=1920x1080x24
     volumes:
@@ -13,7 +12,7 @@ services:
       - liftoff-mods:/home/gamer/.steam/steam/steamapps/common/Liftoff/BepInEx/plugins
     ports:
       - "31264:6901"
-    shm_size: "2g"
+    shm_size: "4g"
     security_opt:
       - seccomp:unconfined
       - apparmor:unconfined
@@ -35,7 +34,6 @@ services:
       dockerfile: docker/Dockerfile
     container_name: liftoff-desktop-2
     environment:
-      - VNC_PASSWORD=${VNC_PASSWORD_2:-changeme}
       - DISPLAY=:1
       - RESOLUTION=1920x1080x24
     volumes:
@@ -43,7 +41,7 @@ services:
       - liftoff-mods-2:/home/gamer/.steam/steam/steamapps/common/Liftoff/BepInEx/plugins
     ports:
       - "31265:6901"
-    shm_size: "2g"
+    shm_size: "4g"
     security_opt:
       - seccomp:unconfined
       - apparmor:unconfined

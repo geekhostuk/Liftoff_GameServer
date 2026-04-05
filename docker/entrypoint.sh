@@ -1,20 +1,23 @@
 #!/bin/bash
 set -e
 
-VNC_PASSWORD="${VNC_PASSWORD:-changeme}"
 DISPLAY="${DISPLAY:-:1}"
 RESOLUTION="${RESOLUTION:-1920x1080x24}"
 
-echo "==> Setting up VNC"
-mkdir -p /home/gamer/.vnc
-
-echo "==> Checking GPU availability"
+echo "==> Checking GPU availability (required)"
 if command -v nvidia-smi &>/dev/null && nvidia-smi &>/dev/null; then
     echo "    NVIDIA GPU detected: $(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null)"
+    echo "    Driver version: $(nvidia-smi --query-gpu=driver_version --format=csv,noheader 2>/dev/null)"
+    echo "    NVENC sessions available: $(nvidia-smi --query-gpu=encoder.stats.sessionCount --format=csv,noheader 2>/dev/null || echo 'N/A')"
 else
-    echo "    No NVIDIA GPU detected, falling back to software rendering"
-    export LIBGL_ALWAYS_SOFTWARE=1
-    export GALLIUM_DRIVER=llvmpipe
+    echo "ERROR: NVIDIA GPU not detected. GPU is required for this setup."
+    echo "       Ensure nvidia-container-toolkit is installed and GPU passthrough is configured."
+    exit 1
+fi
+
+echo "==> Configuring VirtualGL"
+if [ -x /opt/VirtualGL/bin/vglserver_config ]; then
+    /opt/VirtualGL/bin/vglserver_config -config +s +f -t 2>/dev/null || true
 fi
 
 echo "==> Fixing permissions"

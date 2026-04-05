@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     NVIDIA_VISIBLE_DEVICES=all \
     NVIDIA_DRIVER_CAPABILITIES=all
 
-# Core system packages + display + desktop
+# Core system packages + display + desktop + GStreamer
 RUN apt-get update && apt-get install -y --no-install-recommends \
     xvfb \
     x11-xserver-utils \
@@ -32,6 +32,30 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libasound2 \
     nano \
     file \
+    # GStreamer for Selkies streaming
+    python3 \
+    python3-pip \
+    python3-dev \
+    python3-gi \
+    python3-setuptools \
+    python3-websockets \
+    gstreamer1.0-tools \
+    gstreamer1.0-plugins-base \
+    gstreamer1.0-plugins-good \
+    gstreamer1.0-plugins-bad \
+    gstreamer1.0-plugins-ugly \
+    gstreamer1.0-libav \
+    gstreamer1.0-gl \
+    gstreamer1.0-pulseaudio \
+    gstreamer1.0-x \
+    gir1.2-gst-plugins-base-1.0 \
+    gir1.2-gstreamer-1.0 \
+    libgstreamer1.0-0 \
+    libgstreamer-plugins-base1.0-0 \
+    # VirtualGL dependencies
+    libxtst6 \
+    libxv1 \
+    libegl1 \
     && locale-gen en_US.UTF-8 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -39,17 +63,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV LANG=en_US.UTF-8 \
     LC_ALL=en_US.UTF-8
 
-# Install x11vnc and noVNC for web-based remote desktop
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    x11vnc \
-    python3 \
-    python3-numpy \
-    git \
-    && git clone --depth 1 https://github.com/novnc/noVNC.git /opt/noVNC \
-    && git clone --depth 1 https://github.com/novnc/websockify.git /opt/noVNC/utils/websockify \
-    && ln -s /opt/noVNC/vnc.html /opt/noVNC/index.html \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# Install VirtualGL for GPU-accelerated OpenGL rendering
+ARG VIRTUALGL_VERSION=3.1.1
+RUN wget -q "https://github.com/VirtualGL/virtualgl/releases/download/${VIRTUALGL_VERSION}/virtualgl_${VIRTUALGL_VERSION}_amd64.deb" -O /tmp/virtualgl.deb \
+    && dpkg -i /tmp/virtualgl.deb || apt-get install -f -y \
+    && rm /tmp/virtualgl.deb
+
+# Install Selkies-GStreamer for WebRTC streaming with NVENC
+ARG SELKIES_VERSION=1.6.0
+RUN pip3 install --no-cache-dir selkies-gstreamer==${SELKIES_VERSION} || pip3 install --no-cache-dir selkies-gstreamer \
+    && mkdir -p /opt/selkies-web \
+    && wget -q "https://github.com/selkies-project/selkies-gstreamer/releases/download/v${SELKIES_VERSION}/selkies-gstreamer-web_v${SELKIES_VERSION}.tar.gz" -O /tmp/selkies-web.tar.gz \
+    && tar -xzf /tmp/selkies-web.tar.gz -C /opt/selkies-web \
+    && rm /tmp/selkies-web.tar.gz
 
 # Enable 32-bit architecture for Steam
 RUN dpkg --add-architecture i386 \
@@ -78,7 +104,7 @@ RUN echo 'steam steam/question select I AGREE' | debconf-set-selections \
     && rm -rf /var/lib/apt/lists/*
 
 # Add /usr/games to PATH so 'steam' command works
-ENV PATH="/usr/games:${PATH}"
+ENV PATH="/usr/games:/opt/VirtualGL/bin:${PATH}"
 
 # Download BepInEx for Unix (Liftoff is Unity Mono)
 ARG BEPINEX_VERSION=5.4.22
