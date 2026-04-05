@@ -9,7 +9,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
 # Core system packages + display + desktop
 RUN apt-get update && apt-get install -y --no-install-recommends \
     xvfb \
-    xserver-xorg-video-dummy \
     x11-xserver-utils \
     xfce4 \
     xfce4-terminal \
@@ -92,7 +91,7 @@ RUN useradd -m -s /bin/bash -G audio,video gamer
 
 # Copy configuration files
 COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY config/xorg-dummy.conf /etc/X11/xorg-dummy.conf
+COPY scripts/setup-display.sh /opt/scripts/setup-display.sh
 COPY scripts/install-steam.sh /opt/scripts/install-steam.sh
 COPY scripts/install-bepinex.sh /opt/scripts/install-bepinex.sh
 COPY docker/entrypoint.sh /entrypoint.sh
