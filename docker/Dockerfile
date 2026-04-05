@@ -32,6 +32,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libasound2 \
     nano \
     file \
+    # Build tools for Python C extensions (evdev)
+    build-essential \
     # GStreamer for Selkies streaming
     python3 \
     python3-pip \
