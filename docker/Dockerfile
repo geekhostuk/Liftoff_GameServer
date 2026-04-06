@@ -33,6 +33,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     nano \
     file \
     xsel \
+    xdotool \
     # Build tools for Python C extensions (evdev)
     build-essential \
     # GStreamer for Selkies streaming
@@ -145,6 +146,7 @@ COPY scripts/install-steam.sh /opt/scripts/install-steam.sh
 COPY scripts/install-bepinex.sh /opt/scripts/install-bepinex.sh
 COPY scripts/start-selkies.sh /opt/scripts/start-selkies.sh
 COPY scripts/wrap-steamwebhelper.sh /opt/scripts/wrap-steamwebhelper.sh
+COPY scripts/dismiss-steamwebhelper.sh /opt/scripts/dismiss-steamwebhelper.sh
 COPY docker/entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh /opt/scripts/*.sh

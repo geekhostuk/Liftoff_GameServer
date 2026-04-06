@@ -25,15 +25,16 @@ fi
 ENCODER="x264enc"
 echo "INFO: Using x264enc software encoder"
 
+PORT="${SELKIES_PORT:-6901}"
+echo "INFO: Selkies listening on port ${PORT}"
+
 exec selkies-gstreamer \
     --addr=0.0.0.0 \
-    --port=6901 \
+    --port="${PORT}" \
     --enable_https=false \
     --enable_basic_auth=false \
     --encoder="${ENCODER}" \
     --framerate=30 \
     --video_bitrate=6000 \
     --enable_resize=false \
-    --web_root=/opt/gst-web/gst-web \
-    --turn_protocol=tcp \
-    --turn_tls=true
+    --web_root=/opt/gst-web/gst-web
