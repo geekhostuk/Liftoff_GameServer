@@ -31,7 +31,7 @@ exec selkies-gstreamer \
     --enable_https=false \
     --enable_basic_auth=false \
     --encoder="${ENCODER}" \
-    --framerate=60 \
+    --framerate=30 \
     --video_bitrate=6000 \
     --enable_resize=false \
     --web_root=/opt/gst-web/gst-web
