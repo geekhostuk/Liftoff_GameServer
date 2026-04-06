@@ -143,6 +143,7 @@ COPY scripts/setup-display.sh /opt/scripts/setup-display.sh
 COPY scripts/install-steam.sh /opt/scripts/install-steam.sh
 COPY scripts/install-bepinex.sh /opt/scripts/install-bepinex.sh
 COPY scripts/start-selkies.sh /opt/scripts/start-selkies.sh
+COPY scripts/wrap-steamwebhelper.sh /opt/scripts/wrap-steamwebhelper.sh
 COPY docker/entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh /opt/scripts/*.sh
