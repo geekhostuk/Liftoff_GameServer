@@ -34,4 +34,7 @@ exec selkies-gstreamer \
     --framerate=30 \
     --video_bitrate=6000 \
     --enable_resize=false \
-    --web_root=/opt/gst-web/gst-web
+    --web_root=/opt/gst-web/gst-web \
+    --turn_host="" \
+    --turn_port="" \
+    --stun_server="stun:stun.l.google.com:19302"
