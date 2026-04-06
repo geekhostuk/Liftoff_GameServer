@@ -31,7 +31,29 @@ if [ -d "$LIFTOFF_DIR" ] && [ ! -d "$LIFTOFF_DIR/BepInEx" ]; then
 fi
 
 echo "==> Patching steamwebhelper for container GPU compatibility"
-/opt/scripts/wrap-steamwebhelper.sh || true
+HELPER="/home/gamer/.steam/ubuntu12_64/steamwebhelper"
+# Clean up stale .real file from previous failed wrapper attempts
+if [ -f "${HELPER}.real" ] && [ ! -f "${HELPER}.orig" ]; then
+    if file "${HELPER}.real" | grep -q "ELF"; then
+        mv "${HELPER}.real" "$HELPER"
+        echo "    Restored steamwebhelper from stale .real file"
+    fi
+fi
+# Wrap the binary if it's the real ELF executable
+if [ -f "$HELPER" ] && file "$HELPER" | grep -q "ELF"; then
+    mv "$HELPER" "${HELPER}.orig"
+    cat > "$HELPER" << 'WRAPPER'
+#!/bin/bash
+exec "$(dirname "$(realpath "$0")")/steamwebhelper.orig" --no-sandbox --disable-gpu --disable-gpu-compositing "$@"
+WRAPPER
+    chmod +x "$HELPER"
+    chown gamer:gamer "$HELPER" "${HELPER}.orig"
+    echo "    Wrapped steamwebhelper with --disable-gpu"
+elif [ -f "${HELPER}.orig" ]; then
+    echo "    steamwebhelper already wrapped"
+else
+    echo "    steamwebhelper not found (first run)"
+fi
 
 echo "==> Starting supervisord"
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
