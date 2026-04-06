@@ -30,29 +30,18 @@ if [ -d "$LIFTOFF_DIR" ] && [ ! -d "$LIFTOFF_DIR/BepInEx" ]; then
     su - gamer -c "/opt/scripts/install-bepinex.sh"
 fi
 
-echo "==> Patching steamwebhelper for container GPU compatibility"
+echo "==> Restoring steamwebhelper (if previously wrapped)"
 HELPER="/home/gamer/.steam/ubuntu12_64/steamwebhelper"
-# Clean up stale .real file from previous failed wrapper attempts
-if [ -f "${HELPER}.real" ] && [ ! -f "${HELPER}.orig" ]; then
-    if file "${HELPER}.real" | grep -q "ELF"; then
-        mv "${HELPER}.real" "$HELPER"
-        echo "    Restored steamwebhelper from stale .real file"
-    fi
+# Restore original binary if a wrapper was left from previous runs
+if [ -f "${HELPER}.orig" ] && file "${HELPER}.orig" | grep -q "ELF"; then
+    mv -f "${HELPER}.orig" "$HELPER"
+    chown gamer:gamer "$HELPER"
+    echo "    Restored original steamwebhelper"
 fi
-# Wrap the binary if it's the real ELF executable
-if [ -f "$HELPER" ] && file "$HELPER" | grep -q "ELF"; then
-    mv "$HELPER" "${HELPER}.orig"
-    cat > "$HELPER" << 'WRAPPER'
-#!/bin/bash
-exec "$(dirname "$(realpath "$0")")/steamwebhelper.orig" --no-sandbox --disable-gpu --disable-gpu-compositing "$@"
-WRAPPER
-    chmod +x "$HELPER"
-    chown gamer:gamer "$HELPER" "${HELPER}.orig"
-    echo "    Wrapped steamwebhelper with --disable-gpu"
-elif [ -f "${HELPER}.orig" ]; then
-    echo "    steamwebhelper already wrapped"
-else
-    echo "    steamwebhelper not found (first run)"
+if [ -f "${HELPER}.real" ] && file "${HELPER}.real" | grep -q "ELF"; then
+    mv -f "${HELPER}.real" "$HELPER"
+    chown gamer:gamer "$HELPER"
+    echo "    Restored original steamwebhelper from .real"
 fi
 
 echo "==> Starting supervisord"
