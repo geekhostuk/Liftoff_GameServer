@@ -12,20 +12,24 @@ STEAM_DIRS=(
 wrapped=0
 
 for BASE in "${STEAM_DIRS[@]}"; do
-    [ -d "$BASE" ] || continue
-    while IFS= read -r HELPER; do
-        if [ ! -f "${HELPER}.real" ]; then
-            mv "$HELPER" "${HELPER}.real"
-            cat > "$HELPER" << 'WRAPPER'
+    # Resolve symlinks (-L) and check directory exists
+    RESOLVED=$(readlink -f "$BASE" 2>/dev/null || echo "$BASE")
+    for DIR in "$BASE" "$RESOLVED"; do
+        [ -d "$DIR" ] || continue
+        while IFS= read -r HELPER; do
+            if [ ! -f "${HELPER}.real" ]; then
+                mv "$HELPER" "${HELPER}.real"
+                cat > "$HELPER" << 'WRAPPER'
 #!/bin/bash
 exec "$(dirname "$(realpath "$0")")/steamwebhelper.real" --no-sandbox --disable-gpu --disable-gpu-compositing "$@"
 WRAPPER
-            chmod +x "$HELPER"
-            chown gamer:gamer "$HELPER" "${HELPER}.real"
-            echo "Wrapped: $HELPER"
-            wrapped=$((wrapped + 1))
-        fi
-    done < <(find "$BASE" -name "steamwebhelper" -type f -executable ! -name "*.real" 2>/dev/null)
+                chmod +x "$HELPER"
+                chown gamer:gamer "$HELPER" "${HELPER}.real"
+                echo "Wrapped: $HELPER"
+                wrapped=$((wrapped + 1))
+            fi
+        done < <(find -L "$DIR" -name "steamwebhelper" -type f ! -name "*.real" 2>/dev/null)
+    done
 done
 
 if [ "$wrapped" -gt 0 ]; then

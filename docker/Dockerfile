@@ -32,6 +32,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libasound2 \
     nano \
     file \
+    xsel \
     # Build tools for Python C extensions (evdev)
     build-essential \
     # GStreamer for Selkies streaming
@@ -135,7 +136,7 @@ RUN mkdir -p /opt/bepinex \
         -O /opt/bepinex/bepinex.zip
 
 # Create non-root user
-RUN useradd -m -s /bin/bash -G audio,video gamer
+RUN useradd -m -s /bin/bash -G audio,video,pulse-access gamer
 
 # Copy configuration files
 COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
